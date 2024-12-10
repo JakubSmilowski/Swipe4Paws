@@ -117,10 +117,13 @@ export class HomeComponent implements OnInit {
 
   //Create html object filters
 
+  // Get the unique list of behaviors from the notfilteredList using set and flat
   RetriveFilterOptions(){
-    this.currentOptions = this.notfilteredList
-    .map(pet => pet.behaviors.map(b => b.behavior)) // Extract nested behavior strings
-    .flat(); // Flatten the nested arrays
+    this.currentOptions = [...new Set(
+      this.notfilteredList
+        .map(pet => pet.behaviors.map(b => b.behavior)) 
+        .flat() 
+    )];
     console.log("Pets behaviors list correctly loaded" + this.currentOptions);
   }
 
@@ -167,7 +170,7 @@ export class HomeComponent implements OnInit {
       }
     }
   }
-
+  // Applies styles to the behavior gilter box element
   ApplyStyles(buttonElement: HTMLButtonElement) {
     buttonElement.style.display = 'flex';
     buttonElement.style.flexDirection = 'row';
@@ -194,14 +197,13 @@ export class HomeComponent implements OnInit {
   loadListData(): void {
     this.homeService.getList().subscribe((filteredPetsList: PetsListing[]) => {
       this.petsListingList = filteredPetsList;
-      console.log(this.petsListingList + " in home component.ts");
-      console.log(this.currentOptions + "In home component.ts");
       if(this.currentOptions.length == 0){
         this.RetriveFilterOptions();
       }
     });
   }
 
+  //Get data from api, unfiltered list used only for behaviors retrival
   getLoadedList() {
     this.homeService.loadListData().subscribe(
       (data: PetsListing[]) => {
@@ -243,7 +245,7 @@ export class HomeComponent implements OnInit {
   toggleFilterOptions() {
     this.showFilterOptions = !this.showFilterOptions;
   }
-
+  //Calls applyFilters function in the home service
   applyFilters() {
     this.homeService.setFilters(
       this.nameFilter,
@@ -254,6 +256,7 @@ export class HomeComponent implements OnInit {
     this.loadListData();
   }
 
+  //Resets all filters
   resetFilters() {
     this.nameFilter = '';
     this.typeFilter = '';
